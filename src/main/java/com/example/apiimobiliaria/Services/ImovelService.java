@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.Optional;
 import java.io.IOException;
 
 @Service
@@ -62,6 +62,14 @@ public class ImovelService {
 
         foto = fotoImovelRepository.save(foto);
         return "Foto adicionada com sucesso : " + file.getOriginalFilename();
+    }
+
+    public byte[] downloadFoto(String name){
+
+        Optional<FotoImovelModel> fotoData = fotoImovelRepository.findByName(name);
+        byte[] fotos = FotoUtils.decompressImage(fotoData.get().getFotoData());
+        return fotos;
+
     }
 }
 

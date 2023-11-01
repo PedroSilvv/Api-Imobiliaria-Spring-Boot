@@ -23,6 +23,7 @@ public class FotoImovelModel implements Serializable {
 
     private String name;
     private String type;
+    private String url;
 
     @JsonIgnore
     @Lob
@@ -64,5 +65,21 @@ public class FotoImovelModel implements Serializable {
 
     public void setImovel(ImovelModel imovel) {
         this.imovel = imovel;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

@@ -15,6 +15,7 @@ public interface ImovelRepository extends JpaRepository<ImovelModel, Long> {
     @Override
     List<ImovelModel> findAll();
     ImovelModel findById(long id);
+    ImovelModel findByCodigo(String codigo);
     ImovelModel findFirstByECasaAndEAPOrderByCodigoDesc(Boolean ECasa, Boolean EAP);
     //ImovelModel save(ImovelModel imovel);
 
