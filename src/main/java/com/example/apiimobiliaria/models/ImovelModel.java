@@ -1,20 +1,21 @@
 package com.example.apiimobiliaria.models;
 
+
 import com.example.apiimobiliaria.repositories.ImovelRepository;
+
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.UUID;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+
 
 @Entity
 @Table(name="tb_imoveis")
 public class ImovelModel implements Serializable {
+    @Serial
     private static final long serialVersionUID= 1L;
 
 
@@ -22,9 +23,12 @@ public class ImovelModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String codigo;
 
+    @ManyToOne
+    @JoinColumn(name = "proprietario_id")
+    private UserModel proprietario;
     private String endereco;
     private String cidade;
     private String bairro;
@@ -41,6 +45,10 @@ public class ImovelModel implements Serializable {
     private Integer banheiros;
     private Integer vagasGaragem;
 
+
+    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
+    private List<FotoImovelModel> fotos;
+
     @Column(precision = 10, scale = 2)
     private BigDecimal tamanho;
 
@@ -53,7 +61,16 @@ public class ImovelModel implements Serializable {
     @Column(precision = 10, scale = 2)
     private BigDecimal valorCondominio;
 
+    @Column(precision = 10, scale = 2)
     private String descricao;
+
+    public UserModel getProprietario() {
+        return proprietario;
+    }
+
+    public void setProprietario(UserModel proprietario) {
+        this.proprietario = proprietario;
+    }
 
     public Long getId() {
         return id;
@@ -231,5 +248,12 @@ public class ImovelModel implements Serializable {
         this.descricao = descricao;
     }
 
+    public List<FotoImovelModel> getFotos() {
+        return fotos;
+    }
+
+    public void setFotos(List<FotoImovelModel> fotos) {
+        this.fotos = fotos;
+    }
 };
 
