@@ -1,14 +1,29 @@
 package com.example.apiimobiliaria.Services;
 
+
 import com.example.apiimobiliaria.models.FotoImovelModel;
 import com.example.apiimobiliaria.models.ImovelModel;
 import com.example.apiimobiliaria.repositories.FotoImovelRepository;
 import com.example.apiimobiliaria.repositories.ImovelRepository;
 import com.example.apiimobiliaria.utils.FotoUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.antlr.v4.runtime.atn.PredicateEvalInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.io.IOException;
 
@@ -20,6 +35,10 @@ public class ImovelService {
 
     @Autowired
     FotoImovelRepository fotoImovelRepository;
+
+    @PersistenceContext
+    @Autowired
+    EntityManager entityManager;
 
     public ImovelModel save(ImovelModel imovel) {
 
@@ -64,11 +83,43 @@ public class ImovelService {
         return "Foto adicionada com sucesso : " + file.getOriginalFilename();
     }
 
-    public byte[] downloadFoto(String name){
+    public byte[] downloadFoto(String name) throws NotFoundException {
 
         Optional<FotoImovelModel> fotoData = fotoImovelRepository.findByName(name);
+
+        if(fotoData == null){
+            throw new NotFoundException();
+        }
+
         byte[] fotos = FotoUtils.decompressImage(fotoData.get().getFotoData());
         return fotos;
+
+    }
+
+    public List<ImovelModel> filtrarImoveis(boolean venda
+                                            , boolean aluguel
+                                            , boolean ap
+                                            , boolean casa
+                                            , boolean condominio
+                                            , BigDecimal precoMin
+                                            , BigDecimal precoMax){
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ImovelModel> criteriaQuery = criteriaBuilder.createQuery(ImovelModel.class);
+        Root<ImovelModel> root = criteriaQuery.from(ImovelModel.class);
+
+
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("EVenda"), venda));
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("EAluguel"), aluguel));
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("EAP"), ap));
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("ECasa"), casa));
+        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("ECondominio"), condominio));
+
+        Predicate intervaloValores = criteriaBuilder.between(root.get("valor"), precoMin, precoMax);
+
+        criteriaQuery.select(root).where(intervaloValores);
+
+        return entityManager.createQuery(criteriaQuery).getResultList();
 
     }
 }

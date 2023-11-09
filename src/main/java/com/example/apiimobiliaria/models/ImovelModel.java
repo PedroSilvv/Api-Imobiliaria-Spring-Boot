@@ -1,11 +1,8 @@
 package com.example.apiimobiliaria.models;
 
 
-import com.example.apiimobiliaria.repositories.ImovelRepository;
-
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -35,12 +32,12 @@ public class ImovelModel implements Serializable {
     private Integer numeroCasa;
     private String regiao;
     private String tipoImovel;
-    private Boolean ECasa;
-    private Boolean EAP;
-    private Boolean EAluguel;
-    private Boolean EVenda;
-    private Boolean ECondominio;
-    private Boolean publicado;
+    private boolean ECasa;
+    private boolean EAP;
+    private boolean EAluguel;
+    private boolean EVenda;
+    private boolean ECondominio;
+    private boolean publicado;
     private Integer dormitorios;
     private Integer banheiros;
     private Integer vagasGaragem;
@@ -136,51 +133,63 @@ public class ImovelModel implements Serializable {
         this.tipoImovel = tipoImovel;
     }
 
-    public Boolean getECasa() {
+    @JsonProperty("ECasa")
+    public boolean getECasa() {
         return ECasa;
     }
 
-    public void setECasa(Boolean ECasa) {
+    @JsonProperty("ECasa")
+    public void setECasa(boolean ECasa) {
         this.ECasa = ECasa;
     }
 
-    public Boolean getEAP() {
+    @JsonProperty("EAP")
+    public boolean getEAP() {
         return EAP;
     }
 
-    public void setEAP(Boolean EAP) {
+    @JsonProperty("EAP")
+    public void setEAP(boolean EAP) {
         this.EAP = EAP;
     }
 
-    public Boolean getEAluguel() {
+    @JsonProperty("EAluguel")
+    public boolean getEAluguel() {
         return EAluguel;
     }
 
-    public void setEAluguel(Boolean EAluguel) {
+    @JsonProperty("EAluguel")
+    public void setEAluguel(boolean EAluguel) {
         this.EAluguel = EAluguel;
     }
 
-    public Boolean getEVenda() {
+    @JsonProperty("EVenda")
+    public boolean getEVenda() {
         return EVenda;
     }
 
-    public void setEVenda(Boolean EVenda) {
+    @JsonProperty("EVenda")
+    public void setEVenda(boolean EVenda) {
         this.EVenda = EVenda;
     }
 
-    public Boolean getECondominio() {
+    @JsonProperty("ECondominio")
+    public boolean getECondominio() {
         return ECondominio;
     }
 
-    public void setECondominio(Boolean ECondominio) {
+    @JsonProperty("ECondominio")
+    public void setECondominio(boolean ECondominio) {
         this.ECondominio = ECondominio;
     }
 
-    public Boolean getPublicado() {
+    @JsonProperty("EPublicado")
+    public boolean getPublicado() {
         return publicado;
     }
 
-    public void setPublicado(Boolean publicado) {
+    @JsonProperty("EPublicado")
+    public void setPublicado(boolean publicado) {
         this.publicado = publicado;
     }
 

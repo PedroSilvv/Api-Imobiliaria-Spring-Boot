@@ -1,24 +1,23 @@
 package com.example.apiimobiliaria.controllers;
 
 import com.example.apiimobiliaria.Services.ImovelService;
+import com.example.apiimobiliaria.dtos.FiltroImovelRequestDTO;
 import com.example.apiimobiliaria.dtos.FotosImovelResponseDTO;
 import com.example.apiimobiliaria.models.FotoImovelModel;
 import com.example.apiimobiliaria.models.ImovelModel;
 import com.example.apiimobiliaria.repositories.ImovelRepository;
-import jakarta.annotation.Nullable;
-import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value="/api")
@@ -45,9 +44,6 @@ public class ImovelController {
     public ResponseEntity<?> criarImovel(@RequestBody ImovelModel imovel) {
 
         try {
-            if (imovel.getECasa() == null) {
-                imovel.setECasa(true);
-            }
 
             Assert.isNull(imovel.getCodigo(),
                     "O campo codigo não precisa ser fornecido, ele será gerado automaticamente");
@@ -84,7 +80,7 @@ public class ImovelController {
     }
 
     @GetMapping("foto/{name}")
-    public ResponseEntity<?> verFoto(@PathVariable String name){
+    public ResponseEntity<?> verFoto(@PathVariable String name) throws ChangeSetPersister.NotFoundException {
 
         byte[] fotoData = imovelService.downloadFoto(name);
 
@@ -117,9 +113,30 @@ public class ImovelController {
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
         }
+    }
+
+    @PostMapping("filtrar-imoveis")
+    public ResponseEntity<List<ImovelModel>> filtrarImoveis(@RequestBody FiltroImovelRequestDTO filtro) throws Exception {
+
+        try{List<ImovelModel> imoveisFiltrados = imovelService.filtrarImoveis(
+                filtro.isVenda(),
+                filtro.isAluguel(),
+                filtro.isAp(),
+                filtro.isCasa(),
+                filtro.isCondominio(),
+                filtro.getPrecoMinimo(),
+                filtro.getPrecoMaximo()
+        );
+            return ResponseEntity.status(HttpStatus.OK).body(imoveisFiltrados);
+        }
+        catch (Exception e){
+            throw new Exception("Não foi encontrado nenhum imóvel com essas especificações");
+        }
+
 
 
     }
+
 
 }
 
