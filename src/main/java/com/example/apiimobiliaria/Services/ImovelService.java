@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Optional;
 import java.io.IOException;
 
@@ -65,13 +66,17 @@ public class ImovelService {
         return imovelRepository.save(imovel);
     }
 
+    public ImovelModel updateImovel(ImovelModel imovel){
+        return imovelRepository.save(imovel);
+    }
+
     public String uploadFoto(MultipartFile file, ImovelModel imovel) throws IOException {
 
         FotoImovelModel fotoData = new FotoImovelModel();
         fotoData.setImovel(imovel);
 
         FotoImovelModel foto = FotoImovelModel.builder()
-                        .name(file.getOriginalFilename())
+                        .name(file.getOriginalFilename()+"-"+imovel.getCodigo().toLowerCase())
                         .type(file.getContentType())
                         .fotoData(FotoUtils.compressImage(file.getBytes()))
                         .build();
@@ -80,7 +85,7 @@ public class ImovelService {
 
 
         foto = fotoImovelRepository.save(foto);
-        return "Foto adicionada com sucesso : " + file.getOriginalFilename();
+        return "Foto adicionada com sucesso : " + foto.getName();
     }
 
     public byte[] downloadFoto(String name) throws NotFoundException {
@@ -122,5 +127,6 @@ public class ImovelService {
         return entityManager.createQuery(criteriaQuery).getResultList();
 
     }
+
 }
 

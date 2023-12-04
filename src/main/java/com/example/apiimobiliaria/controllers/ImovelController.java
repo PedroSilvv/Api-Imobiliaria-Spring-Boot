@@ -1,6 +1,7 @@
 package com.example.apiimobiliaria.controllers;
 
 import com.example.apiimobiliaria.Services.ImovelService;
+import com.example.apiimobiliaria.dtos.AtualizarImovelRequestDTO;
 import com.example.apiimobiliaria.dtos.FiltroImovelRequestDTO;
 import com.example.apiimobiliaria.dtos.FotosImovelResponseDTO;
 import com.example.apiimobiliaria.models.FotoImovelModel;
@@ -57,6 +58,25 @@ public class ImovelController {
 
     }
 
+    @PostMapping("/atualizar-imovel/{id}")
+    public ResponseEntity<?> atualizarImovel(@PathVariable(value = "id") long id,
+                                             @RequestBody AtualizarImovelRequestDTO requestDTO){
+
+        ImovelModel imovel = imovelRepository.findById(id);
+
+        if(imovel == null){return null;}
+
+        imovel.setEndereco(requestDTO.getEndereco());
+        imovel.setCidade(requestDTO.getCidade());
+        imovel.setBairro(requestDTO.getBairro());
+        imovel.setEAluguel(requestDTO.iseAluguel());
+        imovel.setEVenda(requestDTO.iseVenda());
+
+        ImovelModel novoImovel = imovelService.updateImovel(imovel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(imovel);
+    }
+
     @PostMapping("/add-fotos/{id}")
     public ResponseEntity<?> addFotos(@PathVariable(value = "id") long id, @RequestBody List<MultipartFile> files) {
 
@@ -80,13 +100,18 @@ public class ImovelController {
     }
 
     @GetMapping("foto/{name}")
-    public ResponseEntity<?> verFoto(@PathVariable String name) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<?> verFoto(@PathVariable String name) throws Exception {
 
-        byte[] fotoData = imovelService.downloadFoto(name);
+        try{
+            byte[] fotoData = imovelService.downloadFoto(name);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(fotoData);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("image/png"))
+                    .body(fotoData);
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{ error : " + e.getMessage() + " }");
+        }
     }
 
     @GetMapping("{codigo}/fotos")
